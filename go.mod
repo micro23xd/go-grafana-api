@@ -1,4 +1,4 @@
-module github.com/nytm/go-grafana-api
+module github.com/micro23xd/go-grafana-api
 
 go 1.13
 
