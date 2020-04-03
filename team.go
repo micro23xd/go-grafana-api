@@ -103,28 +103,41 @@ func (c *Client) Team(id int64) (*Team, error) {
 // AddTeam makes a new team
 // email arg is an optional value.
 // If you don't want to set email, please set "" (empty string).
-func (c *Client) AddTeam(name string, email string) error {
+func (c *Client) AddTeam(name string, email string) (int64, error) {
 	path := fmt.Sprintf("/api/teams")
 	team := Team{
 		Name:  name,
 		Email: email,
 	}
+	id := int64(0)
 	data, err := json.Marshal(team)
 	if err != nil {
-		return err
+		return id, err
 	}
 	req, err := c.newRequest("POST", path, nil, bytes.NewBuffer(data))
 	if err != nil {
-		return err
+		return id, err
 	}
 	resp, err := c.Do(req)
 	if err != nil {
-		return err
+		return id, err
 	}
 	if resp.StatusCode != 200 {
-		return fmt.Errorf(resp.Status)
+		return id, fmt.Errorf(resp.Status)
 	}
-	return nil
+	data, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return id, err
+	}
+	tmp := struct {
+		Id int64 `json:"id"`
+	}{}
+	err = json.Unmarshal(data, &tmp)
+	if err != nil {
+		return id, err
+	}
+	id = tmp.Id
+	return id, err
 }
 
 func (c *Client) UpdateTeam(id int64, name string, email string) error {
