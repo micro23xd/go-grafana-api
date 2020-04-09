@@ -130,8 +130,9 @@ func (c *Client) AddTeam(name string, email string) (int64, error) {
 		return id, err
 	}
 	tmp := struct {
-		Id int64 `json:"id"`
+		Id int64 `json:"teamId"`
 	}{}
+
 	err = json.Unmarshal(data, &tmp)
 	if err != nil {
 		return id, err
